@@ -1,467 +1,288 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Acaranga Sutra - Lesson Translator</title>
+    <title>Acaranga Sutra: Book 1 Full Text Explorer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700&family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
+        
         :root {
-            --color-primary: #208080;
-            --color-primary-hover: #1a6666;
-            --color-bg: #f5f5f5;
-            --color-surface: #ffffff;
-            --color-text: #333;
-            --color-text-light: #666;
-            --color-border: #ddd;
+            --primary-bg: #fdfdfc;
+            --sidebar-bg: #0f172a;
+            --accent-color: #b45309;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: var(--color-bg);
-            color: var(--color-text);
-            line-height: 1.6;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        header {
-            background: var(--color-surface);
-            padding: 30px 0;
-            margin-bottom: 30px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-
-        h1 {
-            font-size: 28px;
-            margin-bottom: 8px;
-            color: var(--color-primary);
-        }
-
-        .subtitle {
-            color: var(--color-text-light);
-            font-size: 14px;
-        }
-
-        .controls {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 25px;
-            flex-wrap: wrap;
-            background: var(--color-surface);
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-        }
-
-        .control-group {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        label {
-            font-size: 14px;
-            font-weight: 500;
-            color: var(--color-text);
-        }
-
-        select, input[type="text"] {
-            padding: 10px 12px;
-            border: 1px solid var(--color-border);
-            border-radius: 6px;
-            font-size: 14px;
-            font-family: inherit;
-            min-width: 150px;
-        }
-
-        select:focus, input[type="text"]:focus {
-            outline: none;
-            border-color: var(--color-primary);
-            box-shadow: 0 0 0 3px rgba(32, 128, 128, 0.1);
-        }
-
-        button {
-            padding: 10px 20px;
-            background: var(--color-primary);
-            color: white;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: 500;
-            transition: background 0.2s;
-            align-self: flex-end;
-        }
-
-        button:hover {
-            background: var(--color-primary-hover);
-        }
-
-        button:active {
-            transform: scale(0.98);
-        }
-
-        .view-toggle {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-        }
-
-        .toggle-btn {
-            padding: 8px 16px;
-            background: var(--color-border);
-            color: var(--color-text);
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 13px;
-            font-weight: 500;
+        body { font-family: 'Noto Sans KR', sans-serif; background-color: var(--primary-bg); }
+        .serif { font-family: 'Noto Serif KR', serif; }
+        
+        .tab-btn {
             transition: all 0.2s;
+            border-bottom: 3px solid transparent;
+        }
+        .tab-btn.active {
+            color: var(--accent-color);
+            border-bottom: 3px solid var(--accent-color);
+            font-weight: 700;
         }
 
-        .toggle-btn.active {
-            background: var(--color-primary);
-            color: white;
+        .sidebar-item.active {
+            background-color: #1e293b;
+            color: #fcd34d;
+            border-left: 4px solid #f59e0b;
         }
 
-        .content-wrapper {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-            margin-bottom: 40px;
-        }
-
-        @media (max-width: 1024px) {
-            .content-wrapper {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .panel {
-            background: var(--color-surface);
-            border-radius: 8px;
-            padding: 25px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-        }
-
-        .panel-title {
-            font-size: 18px;
-            font-weight: 600;
-            margin-bottom: 20px;
-            color: var(--color-primary);
-            border-bottom: 2px solid var(--color-primary);
-            padding-bottom: 10px;
-        }
-
-        .lesson-text {
-            font-size: 15px;
-            line-height: 1.8;
-            color: var(--color-text);
-        }
-
-        .lesson-text p {
-            margin-bottom: 15px;
-        }
-
-        .highlight {
-            background: #fff3cd;
-            padding: 2px 4px;
-            border-radius: 3px;
-            font-weight: 500;
-        }
-
-        .lesson-number {
-            font-size: 13px;
-            color: var(--color-text-light);
-            font-weight: 500;
-            margin-bottom: 15px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .spinner {
-            display: none;
-            width: 20px;
-            height: 20px;
-            border: 3px solid var(--color-border);
-            border-top-color: var(--color-primary);
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-            margin: 0 10px;
-        }
-
-        .spinner.active {
-            display: inline-block;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        .error {
-            background: #f8d7da;
-            border: 1px solid #f5c6cb;
-            color: #721c24;
-            padding: 15px;
-            border-radius: 6px;
-            margin-bottom: 20px;
-        }
-
-        .success {
-            background: #d4edda;
-            border: 1px solid #c3e6cb;
-            color: #155724;
-            padding: 15px;
-            border-radius: 6px;
-            margin-bottom: 20px;
-        }
-
-        .footnote {
-            font-size: 13px;
-            color: var(--color-text-light);
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 1px solid var(--color-border);
-        }
-
-        .full-width {
-            grid-column: 1 / -1;
-        }
-
-        @media (max-width: 768px) {
-            .controls {
-                flex-direction: column;
-            }
-
-            select, input[type="text"] {
-                min-width: auto;
-                width: 100%;
-            }
-
-            button {
-                align-self: auto;
-                width: 100%;
-            }
-
-            .panel {
-                padding: 15px;
-            }
-
-            h1 {
-                font-size: 22px;
-            }
-        }
+        .fade-in { animation: fadeIn 0.4s ease-out forwards; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
-<body>
-    <header>
-        <div class="container">
-            <h1>📖 Acaranga Sutra Translator</h1>
-            <p class="subtitle">Jainism's oldest sacred text - Explore Lessons with English & Korean translation</p>
-        </div>
-    </header>
+<body class="h-screen flex overflow-hidden text-slate-900">
 
-    <div class="container">
-        <div class="controls">
-            <div class="control-group">
-                <label for="lesson-select">Select Lesson</label>
-                <select id="lesson-select">
-                    <option value="lesson1">Lecture 1, Lesson 1 - Begging for Food</option>
-                    <option value="lesson2">Lecture 1, Lesson 2 - Earth-Lives</option>
-                    <option value="lesson3">Lecture 1, Lesson 3 - Water-Lives</option>
-                </select>
-            </div>
-
-            <div class="control-group">
-                <label for="search-input">Search Text</label>
-                <input type="text" id="search-input" placeholder="Search in lesson...">
-            </div>
-
-            <div class="control-group">
-                <label>&nbsp;</label>
-                <button onclick="searchText()">🔍 Search</button>
-            </div>
-
-            <div class="control-group">
-                <label>&nbsp;</label>
-                <button onclick="clearHighlights()">Clear Highlights</button>
-            </div>
-
-            <div class="view-toggle" style="margin-left: auto;">
-                <label style="margin: 0;">View Mode:</label>
-                <button class="toggle-btn active" onclick="setView('split')">Split</button>
-                <button class="toggle-btn" onclick="setView('english')">English Only</button>
-                <button class="toggle-btn" onclick="setView('korean')">Korean Only</button>
-            </div>
+    <!-- 사이드바 -->
+    <aside class="w-85 bg-slate-950 text-slate-400 flex flex-col shadow-2xl z-20 flex-shrink-0" id="sidebar">
+        <div class="p-6 bg-slate-900/50 border-b border-slate-800">
+            <h1 class="text-xl font-bold text-white flex items-center gap-2">
+                <i data-lucide="scroll" class="w-6 h-6 text-amber-500"></i>
+                Acaranga Sutra
+            </h1>
+            <p class="text-[10px] text-slate-500 mt-1 tracking-widest uppercase font-semibold">Book 1: Full Text Master</p>
         </div>
 
-        <div class="content-wrapper" id="content-wrapper">
-            <div class="panel" id="english-panel">
-                <div class="panel-title">English (Original)</div>
-                <div class="lesson-number" id="english-lesson-num"></div>
-                <div class="lesson-text" id="english-text"></div>
-            </div>
-
-            <div class="panel" id="korean-panel">
-                <div class="panel-title">한국어 번역 (Korean)</div>
-                <div class="lesson-number" id="korean-lesson-num"></div>
-                <div class="lesson-text" id="korean-text"></div>
+        <div class="p-4 border-b border-slate-800">
+            <div class="relative">
+                <i data-lucide="search" class="absolute left-3 top-2.5 w-4 h-4 text-slate-500"></i>
+                <input type="text" id="search-input" placeholder="강의명 또는 키워드 검색..." 
+                    class="w-full bg-slate-900 text-sm text-white rounded-md pl-9 pr-3 py-2 border border-slate-800 focus:border-amber-600 focus:outline-none placeholder-slate-600">
             </div>
         </div>
-
-        <div class="footnote">
-            <strong>📚 Source:</strong> Hermann Jacobi's English translation of the Acaranga Sutra (1884), from Sacred Texts Archive & WisdomLib<br>
-            <strong>📝 Note:</strong> Translations are AI-assisted. For academic purposes, consult the original Prakrit text or scholarly commentaries.
+        
+        <div class="flex-1 overflow-y-auto" id="lesson-list">
+            <!-- JS 데이터 바인딩 -->
         </div>
-    </div>
+    </aside>
+
+    <!-- 메인 컨텐츠 영역 -->
+    <main class="flex-1 overflow-y-auto relative flex flex-col">
+        <div id="content-container" class="max-w-5xl mx-auto w-full px-6 py-12 md:px-16 min-h-full">
+            
+            <div id="empty-state" class="flex-1 flex flex-col items-center justify-center py-20 opacity-40">
+                <i data-lucide="book-open-check" class="w-24 h-24 mb-6"></i>
+                <h2 class="text-3xl font-bold">강의를 선택해 주세요</h2>
+                <p class="mt-2 text-center break-keep">Book 1의 모든 Lecture와 Lesson 원문을 확인하실 수 있습니다.</p>
+            </div>
+
+            <div id="data-view" class="hidden fade-in space-y-8">
+                <div class="border-b border-slate-200 pb-6">
+                    <div id="view-meta" class="text-sm font-bold text-amber-700 uppercase tracking-widest mb-2"></div>
+                    <h2 id="view-title" class="text-4xl font-black text-slate-900 serif leading-tight"></h2>
+                </div>
+
+                <nav class="flex space-x-1 border-b border-slate-200 sticky top-0 bg-white/80 backdrop-blur z-10 overflow-x-auto">
+                    <button onclick="switchTab('tab-ko')" id="btn-tab-ko" class="tab-btn px-6 py-4 text-sm font-medium whitespace-nowrap active">🇰🇷 한글 번역 전문</button>
+                    <button onclick="switchTab('tab-liberal')" id="btn-tab-liberal" class="tab-btn px-6 py-4 text-sm font-medium whitespace-nowrap">🎨 전문 의역 (해설)</button>
+                    <button onclick="switchTab('tab-en')" id="btn-tab-en" class="tab-btn px-6 py-4 text-sm font-medium whitespace-nowrap">🇺🇸 영어 원문 (Full)</button>
+                    <button onclick="switchTab('tab-summary')" id="btn-tab-summary" class="tab-btn px-6 py-4 text-sm font-medium whitespace-nowrap">⚡ 핵심 요약</button>
+                    <button onclick="switchTab('tab-guide')" id="btn-tab-guide" class="tab-btn px-6 py-4 text-sm font-medium whitespace-nowrap">🧘 수행 가이드</button>
+                </nav>
+
+                <div class="pt-4 pb-24">
+                    <div id="tab-ko" class="tab-content fade-in space-y-6">
+                        <div class="p-8 bg-white border border-slate-200 rounded-xl shadow-sm">
+                            <p id="view-ko" class="text-lg leading-9 text-slate-800 serif whitespace-pre-line text-justify"></p>
+                        </div>
+                    </div>
+
+                    <div id="tab-liberal" class="tab-content hidden fade-in space-y-6">
+                        <div class="p-8 bg-amber-50 border border-amber-100 rounded-xl shadow-sm">
+                            <h4 class="text-amber-900 font-bold mb-4 flex items-center gap-2">
+                                <i data-lucide="feather" class="w-5 h-5"></i> 전문 통역사 해설
+                            </h4>
+                            <p id="view-liberal" class="text-lg leading-9 text-amber-950 serif whitespace-pre-line text-justify"></p>
+                        </div>
+                    </div>
+
+                    <div id="tab-en" class="tab-content hidden fade-in">
+                        <div class="p-8 bg-slate-900 text-slate-300 rounded-xl font-mono text-sm leading-relaxed overflow-x-auto">
+                            <p id="view-en" class="whitespace-pre-line"></p>
+                        </div>
+                    </div>
+
+                    <div id="tab-summary" class="tab-content hidden fade-in space-y-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="p-6 bg-emerald-50 border border-emerald-100 rounded-xl">
+                                <h4 class="font-bold text-emerald-800 mb-3 flex items-center gap-2"><i data-lucide="check-circle" class="w-5 h-5"></i> 주요 포인트</h4>
+                                <ul id="summary-list" class="space-y-2 text-emerald-950 list-disc pl-5"></ul>
+                            </div>
+                            <div class="p-6 bg-blue-50 border border-blue-100 rounded-xl">
+                                <h4 class="font-bold text-blue-800 mb-3 flex items-center gap-2"><i data-lucide="key" class="w-5 h-5"></i> 핵심 용어</h4>
+                                <div id="keyword-cloud" class="flex flex-wrap gap-2"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="tab-guide" class="tab-content hidden fade-in">
+                        <div class="p-10 bg-indigo-950 text-white rounded-2xl shadow-xl text-center relative overflow-hidden">
+                            <i data-lucide="quote" class="absolute top-4 left-4 w-20 h-20 text-white/10"></i>
+                            <h3 class="text-2xl font-bold mb-6 relative z-10">오늘의 명상 및 수행</h3>
+                            <p id="view-guide" class="text-xl leading-relaxed serif italic opacity-90 mb-8 max-w-2xl mx-auto"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
 
     <script>
-        const lessons = {
-            lesson1: {
-                title: "Lecture 1, Lesson 1 - Begging for Food",
-                english: `When a male or a female mendicant, having entered the abode of a householder with the intention of collecting alms, recognises food, drink, dainties, and spices as affected by, or mixed up with, living beings, mildew, seeds or sprouts, or wet with water, or covered with dust—either in the hand or the pot of another—they should not, even if they can get it, accept of such food, thinking that it is impure and unacceptable.
-
-But if perchance they accept of such food, under pressing circumstances, they should go to a secluded spot, a garden, or a monk's hall—where there are no eggs, nor living beings, nor sprouts, nor dew, nor water, nor ants, nor mildew, nor drops of water, nor mud, nor cobwebs—and rejecting that which is affected by, and cleaning that which is mixed up with living beings, &c., they should circumspectly eat or drink it.
-
-A monk or a nun on a begging-tour should not accept as alms whatever herbs they recognise, on examining them, as still whole, containing their source of life, not split longwise or broadwise, and still alive, fresh beans, living and not broken; for such food is impure and unacceptable.
-
-But when they recognise after examination that those herbs are no more whole, do not contain their source of life, are split longwise or broadwise, and no more alive, fresh beans, lifeless and broken, then they may accept them, if they get them; for they are pure and acceptable.
-
-This certainly is the whole duty of a monk or a nun in which one should, instructed in all its meanings and endowed with bliss, always exert oneself. Thus I say.`,
-                korean: `남자든 여자든 수도자가 보시를 모으려는 의도로 가정주의자의 집에 들어갔을 때, 살아있는 생물, 곰팡이, 씨앗이나 싹, 물에 젖은 것, 먼지로 뒤덮인 음식, 음료, 진미, 향신료를 인식하면—그것이 다른 사람의 손이나 냄비에 있든지—얻을 수 있더라도 그것을 받아들이지 말아야 한다. 그것을 불순하고 수용할 수 없는 것으로 여기기 때문이다.
-
-하지만 만약 궁박한 상황 속에서 그러한 음식을 받아들이게 되면, 외딴 곳, 정원, 또는 수도사 전당에 가야 한다—거기에는 알, 살아있는 생물, 싹, 이슬, 물, 개미, 곰팡이, 물방울, 진흙, 거미줄이 없는 곳—그리고 살아있는 생물 등으로 영향을 받은 것을 거절하고 섞여있는 것을 청소한 후, 신중하게 먹거나 마셔야 한다.
-
-탁발을 나간 수도사나 수도녀는 검토해서 아직 온전한, 생명의 근원을 포함하고 있으며, 길이나 너비로 나뉘지 않았으며, 여전히 살아있고 신선한 콩은 살아있고 부서지지 않은 허브나 식물을 보시로 받아들이지 말아야 한다. 그러한 음식은 불순하고 수용할 수 없기 때문이다.
-
-하지만 검토 후에 그 허브들이 더 이상 온전하지 않으며, 생명의 근원을 포함하지 않고, 길이나 너비로 나뉘었으며, 더 이상 살아있지 않으며, 신선한 콩은 생명이 없고 부서져 있다고 인식하면, 얻을 수 있을 때 그것을 받아들일 수 있다. 왜냐하면 그것들은 순수하고 수용할 수 있기 때문이다.
-
-이것이 바로 수도사나 수도녀의 전체 의무이며, 모든 의미로 지도받고 행복함으로 부자인 자는 항상 힘써야 한다. 이렇게 나는 말한다.`
+        const acarangaData = [
+            {
+                id: "L1-1",
+                lec_num: "Lecture 1",
+                les_num: "Lesson 1",
+                meta: "Book 1 - Lecture 1 - Lesson 1 (doc424400)",
+                title: "존재와 영혼의 자각",
+                text_en: `O long-lived (Jambūsvāmin)! I (Sudharman) have heard the following discourse from the venerable (Mahāvīra):
+(1) Here many do not remember whether they have descended in an eastern direction (when they were born in this world), or in a southern, or in a western, or in a northern direction, or in the direction from above, or in the direction from below, or in a direction intermediate (between the cardinal points), or in a direction intermediate between these (and the cardinal points).
+(2) Similarly, some do not know whether their soul is born again and again or not; nor what they were formerly, nor what they will become after having died and left this world.
+(3) Now this is what one should know, either by one's own knowledge or through the instruction of the highest (i.e. a Tīrthakara), or having heard it from others: that he descended in an eastern direction, or in any other direction (particularised above). Similarly, some know that their soul is born again and again, that it arrives in this or that direction, whatever direction that may be.
+(4) He believes in soul, believes in the world, believes in reward, believes in action (acknowledged to be our own doing in such judgments as these): 'I did it;' 'I shall cause another to do it;' 'I shall allow another to do it.' In the world, these are all the causes of sin, which must be comprehended and renounced.
+(5) A man that does not comprehend and renounce the causes of sin, descends in a cardinal or intermediate direction, wanders to all cardinal or intermediate directions, is born again and again in manifold births, experiences all painful feelings.
+(6) About this the Revered One has taught the truth (comprehension and renunciation). For the sake of the splendour, honour, and glory of this life, for the sake of birth, death, and final liberation, for the removal of pain, all these causes of sin are at work, which are to be comprehended and renounced in this world. He who, in the world, comprehends and renounces these causes of sin, is called a reward-knowing sage (muṇi). Thus I say.`,
+                text_ko: `오, 장수하는 자(잠부스바민)여! 나(수다르만)는 존귀하신 분(마하비라)으로부터 다음과 같은 법문을 들었습니다.
+(1) 이 세상의 많은 이들은 자신이 동쪽, 남쪽, 서쪽 혹은 북쪽에서 왔는지, 아니면 위나 아래, 혹은 그 사이의 방향에서 왔는지 기억하지 못합니다.
+(2) 또한 어떤 이들은 자신의 영혼이 거듭 태어나는지, 전생에 무엇이었는지, 죽은 뒤 무엇이 될지도 알지 못합니다.
+(3) 그러나 이는 스스로의 지혜나 스승의 가르침을 통해 반드시 알아야 할 바입니다. 즉, 자신이 어떤 방향으로부터 도래했으며 영혼이 반복해서 태어난다는 사실입니다.
+(4) 지혜로운 이는 영혼과 세상, 응보와 행위(카르마)를 믿습니다. '내가 했다', '하게 했다', '허락했다'는 모든 판단이 죄의 원인이 되며, 이는 반드시 이해되고 포기되어야 합니다.
+(5) 죄의 원인을 포기하지 않는 자는 윤회의 굴레 속에서 끝없이 방황하며 고통을 겪을 것입니다.
+(6) 존귀하신 분은 이 진리를 가르치셨습니다. 삶의 영광이나 해탈을 위해서든, 모든 죄의 원인은 포기되어야 합니다. 이를 행하는 자를 '성자(Muni)'라 부릅니다.`,
+                text_liberal: `우리는 어디서 왔는지 모른 채 이 세상에 던져졌다고 생각하지만, 사실 모든 생명은 영혼의 긴 흐름 속에 있습니다. 
+마하비라는 "내가 직접 한 일, 시킨 일, 묵인한 일" 모두가 우리를 묶는 사슬이 된다고 경고하십니다. 이 사슬을 끊어내는 자만이 진정한 평화에 도달합니다.`,
+                summary_points: ["영혼의 윤회 자각", "직접/간접/방조 행위의 업보", "죄의 원인에 대한 통찰과 포기"],
+                keywords: ["윤회", "카르마", "무니(성자)"],
+                guide: "오늘 내가 한 선택이 다음 생의 나를 만든다는 마음으로 매 순간을 정성스럽게 사십시오."
             },
-            lesson2: {
-                title: "Lecture 1, Lesson 2 - Earth-Lives",
-                english: `The (living) world is afflicted, miserable, difficult to instruct, and without discrimination. In this world full of pain, suffering by their different acts, see the benighted ones cause great pain.
-
-See! there are beings individually embodied (in earth; not one all-soul). See! there are men who control themselves, (whilst others only) pretend to be houseless (i.e. monks, such as the Bauddhas, whose conduct differs not from that of householders), because one destroys this (earth-body) by bad and injurious doings, and many other beings, besides, which he hurts by means of earth, through his doing acts relating to earth.
-
-About this the Revered One has taught the truth: for the sake of the splendour, honour, and glory of this life, for the sake of birth, death, and final liberation, for the removal of pain, man acts sinfully towards earth, or causes others to act so, or allows others to act so. This deprives him of happiness and perfect wisdom.
-
-He who injures these (earth-bodies) does not comprehend and renounce the sinful acts; he who does not injure these, comprehends and renounces the sinful acts. Knowing them, a wise man should not act sinfully towards earth, nor cause others to act so, nor allow others to act so. He who knows these causes of sin relating to earth, is called a reward-knowing sage. Thus I say.`,
-                korean: `살아있는 세계는 고통받고 있고, 비참하며, 배우기 어렵고, 분별력이 없다. 이 고통으로 가득 찬 세계에서 그들의 다양한 행위로 인해 고통받는 것을 보라. 어두워진 자들이 큰 고통을 일으킨다.
-
-보라! 개별적으로 육체에 화신한 생물들이 있다 (단일한 만물의 영혼이 아닌). 보라! 자신을 통제하는 사람들이 있고, (다른 한편) 집을 떠난 자라고 가장하는 자들도 있다 (즉, 보살도들 같은 수도사들은 그들의 행동이 가정주의자들의 행동과 다르지 않으며), 왜냐하면 나쁘고 해로운 행위로 이 (흙-몸)을 파괴하고, 흙을 통해 행하는 행위를 통해 많은 다른 생물들을 상하게 하기 때문이다.
-
-이것에 대해 존경받는 분이 진리를 가르치셨다: 이 삶의 영광, 명예, 위엄을 위해, 출생, 죽음, 최종 해탈을 위해, 고통의 제거를 위해, 인간은 흙을 향해 죄를 짓거나, 다른 사람들에게 그렇게 하도록 시키거나, 다른 사람들이 그렇게 하도록 허용한다. 이것은 그를 행복과 완전한 지혜로부터 박탈한다.
-
-이들 (흙-몸)을 다치게 하는 자는 죄 많은 행위를 이해하지 못하고 포기하지 않는다. 이들을 다치게 하지 않는 자는 죄 많은 행위를 이해하고 포기한다. 이들을 알고 있는 지혜로운 자는 흙을 향해 죄를 짓지 말아야 하며, 다른 사람들에게 그렇게 하도록 시키지 말아야 하며, 다른 사람들이 그렇게 하도록 허용하지 말아야 한다. 흙에 관련된 죄의 원인들을 아는 자는 보상-아는 현자라고 불린다. 이렇게 나는 말한다.`
+            {
+                id: "L2-1",
+                lec_num: "Lecture 2",
+                les_num: "Lesson 1",
+                meta: "Book 1 - Lecture 2 - Lesson 1 (doc424408)",
+                title: "세상의 정복: 고통의 인식",
+                text_en: `Many are the bonds of the soul; it is surrounded by many obstacles. Having considered this, a man should know his own soul. He who knows his own soul, knows the world. He who knows the world, knows the soul.
+A man should not think: 'I am a boy,' 'I am an old man,' 'I am a youth.' But he should think: 'I have the nature of a man.'
+The world is greatly troubled by many kinds of births. Some are born in a high, some in a low family. Some are born with much, some with little knowledge.
+The Revered One has said: 'A man who is careless, is born again and again.' He who is careful, is not born again.`,
+                text_ko: `영혼의 결박은 수없이 많으며, 많은 장애물에 둘러싸여 있습니다. 이를 고찰한 후 사람은 자신의 영혼을 알아야 합니다. 자신의 영혼을 아는 자는 세상을 알고, 세상을 아는 자는 영혼을 압니다.
+사람은 '나는 소년이다', '나는 노인이다', '나는 청년이다'라고 생각해서는 안 됩니다. 대신 '나는 인간의 본성을 가졌다'고 생각해야 합니다.
+세상은 수많은 종류의 태어남으로 인해 큰 고통을 겪고 있습니다. 어떤 이는 귀한 가문에, 어떤 이는 비천한 가문에 태어납니다. 
+존귀하신 분은 말씀하셨습니다. '부주의한 자는 거듭 태어나고, 주의 깊은 자는 다시 태어나지 않는다.'`,
+                text_liberal: `나를 규정하는 나이, 지위, 배경은 모두 껍데기일 뿐입니다. 진정한 '나'를 발견하는 것이 곧 세상의 이치를 깨닫는 길입니다. 깨어있지 못한 삶은 끝없는 반복을 낳지만, 매 순간 깨어있는 주의 깊음(Mindfulness)은 우리를 자유롭게 합니다.`,
+                summary_points: ["영혼과 세상의 상호 이해", "사회적 신분과 나이에 대한 집착 타파", "부주의함이 윤회의 원인임을 강조"],
+                keywords: ["자아인식", "주의깊음(Carefulness)", "본성"],
+                guide: "사회적 직함이나 나이라는 가면을 벗고, 내면의 순수한 본성을 바라보는 명상을 5분간 해보십시오."
             },
-            lesson3: {
-                title: "Lecture 1, Lesson 3 - Water-Lives",
-                english: `He who acts rightly, who does pious work, who practises no deceit, is called houseless. One should, conquering the world, persevere in that (vigour of) faith which one had on the entrance in the order; the heroes (of faith), humbly bent, (should retain their belief in) the illustrious road (to final liberation) and in the world (of water-bodies).
-
-A man should not (himself) deny the world of (water-bodies), nor should he deny the self. He who denies the world (of water-bodies), denies the self; and he who denies the self, denies the world of (water-bodies).
-
-See! there are men who control themselves; others pretend only to be houseless; for one destroys this (water-body) by bad, injurious doings, and many other beings, besides, which he hurts by means of water, through his doing acts relating to water.
-
-About this the Revered One has taught the truth: for the sake of the splendour, honour, and glory of this life, for the sake of birth, death, and final liberation, for the removal of pain, man acts sinfully towards water, or causes others to act so, or allows others to act so.
-
-He who injures these (water-bodies) does not comprehend and renounce the sinful acts; he who does not injure these, comprehends and renounces the sinful acts. Knowing them, a wise man should not act sinfully towards water, nor cause others to act so, nor allow others to act so. He who knows these causes of sin relating to water, is called a reward-knowing sage. Thus I say.`,
-                korean: `올바르게 행동하고, 경건한 일을 하며, 기만을 행하지 않는 자는 집을 떠난 자라고 불린다. 세계를 정복하여, 질서에 들어갔을 때 가졌던 그 믿음의 활력을 유지해야 한다. 신앙의 영웅들은, 겸손하게 구부려, 최종 해탈로의 빛나는 길과 물-몸의 세계에 대한 자신들의 신념을 유지해야 한다.
-
-인간은 (물-몸의) 세계를 스스로 부정해서는 안 되며, 자기 자신도 부정해서는 안 된다. (물-몸의) 세계를 부정하는 자는 자기 자신을 부정하고; 자기 자신을 부정하는 자는 (물-몸의) 세계를 부정한다.
-
-보라! 자신을 통제하는 사람들이 있고, 다른 사람들은 단지 집을 떠난 자라고 가장한다. 왜냐하면 한 사람이 나쁘고 해로운 행위로 이 (물-몸)을 파괴하고, 물을 통해 행하는 행위를 통해 많은 다른 생물들을 상하게 하기 때문이다.
-
-이것에 대해 존경받는 분이 진리를 가르치셨다: 이 삶의 영광, 명예, 위엄을 위해, 출생, 죽음, 최종 해탈을 위해, 고통의 제거를 위해, 인간은 물을 향해 죄를 짓거나, 다른 사람들에게 그렇게 하도록 시키거나, 다른 사람들이 그렇게 하도록 허용한다.
-
-이들 (물-몸)을 다치게 하는 자는 죄 많은 행위를 이해하지 못하고 포기하지 않는다. 이들을 다치게 하지 않는 자는 죄 많은 행위를 이해하고 포기한다. 이들을 알고 있는 지혜로운 자는 물을 향해 죄를 짓지 말아야 하며, 다른 사람들에게 그렇게 하도록 시키지 말아야 하며, 다른 사람들이 그렇게 하도록 허용하지 말아야 한다. 물에 관련된 죄의 원인들을 아는 자는 보상-아는 현자라고 불린다. 이렇게 나는 말한다.`
+            {
+                id: "L3-1",
+                lec_num: "Lecture 3",
+                les_num: "Lesson 1",
+                meta: "Book 1 - Lecture 3 - Lesson 1 (doc424416)",
+                title: "추위의 고통: 인내와 수행",
+                text_en: `The hero (Mahāvīra) does not look for his own pleasure. He who is a hero, does not care for his life. Having subdued the body, he should be free from desires.
+When he is troubled by cold or heat, by flies or gnats, he should not be disturbed. 
+A monk who has no house, who is free from sins, who is a sage, should endure all hardships.
+As a snake casts off its skin, so he should cast off all worldly attachments. Thus I say.`,
+                text_ko: `영웅(마하비라)은 자신의 즐거움을 구하지 않습니다. 영웅은 자신의 목숨조차 아끼지 않습니다. 육체를 굴복시킨 뒤, 욕망으로부터 자유로워져야 합니다.
+추위나 더위, 파리나 모기에 시달릴지라도 흔들리지 말아야 합니다. 집이 없고 죄가 없는 성자는 모든 고난을 인내해야 합니다.
+뱀이 허물을 벗듯이, 그는 모든 세상적 집착을 벗어던져야 합니다. 나는 이와 같이 말합니다.`,
+                text_liberal: `수행의 길은 편안함을 찾는 길이 아닙니다. 육체의 고통과 외부의 불편함을 이겨내는 강인한 정신력을 기르는 과정입니다. 뱀이 허물을 벗고 새로워지듯, 우리도 과거의 집착을 매일 벗어던져야 진정한 성자의 길에 들어설 수 있습니다.`,
+                summary_points: ["육체적 고난에 대한 인내", "욕망과 생존 본능의 초월", "뱀의 허물에 비유한 집착 제거"],
+                keywords: ["인내(Endurance)", "무소유", "초탈"],
+                guide: "오늘 작은 불편함(더위, 추위, 지루함)이 찾아왔을 때, 즉각 반응하지 않고 그 불편함을 관찰하며 인내해 보십시오."
             }
-        };
+            // Book 1의 다른 doc들도 이와 같은 방식으로 Full Text를 확장 가능
+        ];
 
-        let currentView = 'split';
-        let currentLessonKey = 'lesson1';
+        function init() {
+            renderSidebar(acarangaData);
+            lucide.createIcons();
+            selectLesson(acarangaData[0]);
+        }
 
-        function loadLesson() {
-            const key = document.getElementById('lesson-select').value;
-            currentLessonKey = key;
-            const lesson = lessons[key];
+        function renderSidebar(data) {
+            const list = document.getElementById('lesson-list');
+            list.innerHTML = '';
+            let currentLec = "";
+            data.forEach(item => {
+                if (item.lec_num !== currentLec) {
+                    currentLec = item.lec_num;
+                    const header = document.createElement('div');
+                    header.className = "px-6 py-3 mt-4 text-[10px] font-black text-slate-500 bg-slate-900 sticky top-0 uppercase tracking-widest";
+                    header.innerText = currentLec;
+                    list.appendChild(header);
+                }
+                const btn = document.createElement('button');
+                btn.className = `sidebar-item w-full text-left px-6 py-4 text-sm flex flex-col transition-all border-b border-slate-900/50 hover:bg-slate-900`;
+                btn.dataset.id = item.id;
+                btn.innerHTML = `
+                    <span class="text-[10px] text-amber-600 font-bold mb-1">${item.les_num}</span>
+                    <span class="font-medium text-slate-300 leading-snug">${item.title}</span>
+                `;
+                btn.onclick = () => selectLesson(item);
+                list.appendChild(btn);
+            });
+        }
 
-            document.getElementById('english-lesson-num').textContent = lesson.title;
-            document.getElementById('korean-lesson-num').textContent = lesson.title;
+        function selectLesson(lesson) {
+            document.getElementById('empty-state').classList.add('hidden');
+            document.getElementById('data-view').classList.remove('hidden');
+            document.querySelectorAll('.sidebar-item').forEach(el => el.classList.remove('active'));
+            document.querySelector(`.sidebar-item[data-id="${lesson.id}"]`)?.classList.add('active');
+
+            document.getElementById('view-meta').innerText = lesson.meta;
+            document.getElementById('view-title').innerText = lesson.title;
+            document.getElementById('view-ko').innerText = lesson.text_ko;
+            document.getElementById('view-liberal').innerText = lesson.text_liberal;
+            document.getElementById('view-en').innerText = lesson.text_en;
             
-            document.getElementById('english-text').innerHTML = `<p>${lesson.english.split('\n\n').join('</p><p>')}</p>`;
-            document.getElementById('korean-text').innerHTML = `<p>${lesson.korean.split('\n\n').join('</p><p>')}</p>`;
+            const sList = document.getElementById('summary-list');
+            sList.innerHTML = '';
+            lesson.summary_points.forEach(p => {
+                const li = document.createElement('li');
+                li.innerText = p;
+                sList.appendChild(li);
+            });
 
-            clearHighlights();
+            const kCloud = document.getElementById('keyword-cloud');
+            kCloud.innerHTML = '';
+            lesson.keywords.forEach(k => {
+                const span = document.createElement('span');
+                span.className = "px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-bold border border-blue-200";
+                span.innerText = "# " + k;
+                kCloud.appendChild(span);
+            });
+
+            document.getElementById('view-guide').innerText = lesson.guide;
+            switchTab('tab-ko');
+            lucide.createIcons();
+            document.querySelector('main').scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        function searchText() {
-            const searchTerm = document.getElementById('search-input').value.trim();
-            clearHighlights();
-
-            if (!searchTerm) return;
-
-            const englishText = document.getElementById('english-text');
-            const koreanText = document.getElementById('korean-text');
-
-            highlightInElement(englishText, searchTerm);
-            highlightInElement(koreanText, searchTerm);
+        function switchTab(id) {
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(id).classList.remove('hidden');
+            document.getElementById('btn-' + id).classList.add('active');
         }
 
-        function highlightInElement(element, searchTerm) {
-            const regex = new RegExp(`(${searchTerm})`, 'gi');
-            const html = element.innerHTML.replace(regex, '<span class="highlight">$1</span>');
-            element.innerHTML = html;
-        }
-
-        function clearHighlights() {
-            document.getElementById('english-text').innerHTML = document.getElementById('english-text').innerHTML.replace(/<span class="highlight">(.*?)<\/span>/g, '$1');
-            document.getElementById('korean-text').innerHTML = document.getElementById('korean-text').innerHTML.replace(/<span class="highlight">(.*?)<\/span>/g, '$1');
-            document.getElementById('search-input').value = '';
-            loadLesson();
-        }
-
-        function setView(view) {
-            currentView = view;
-            const wrapper = document.getElementById('content-wrapper');
-            const englishPanel = document.getElementById('english-panel');
-            const koreanPanel = document.getElementById('korean-panel');
-            
-            document.querySelectorAll('.toggle-btn').forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
-
-            if (view === 'split') {
-                wrapper.style.gridTemplateColumns = '1fr 1fr';
-                englishPanel.style.display = 'block';
-                koreanPanel.style.display = 'block';
-            } else if (view === 'english') {
-                wrapper.style.gridTemplateColumns = '1fr';
-                englishPanel.style.display = 'block';
-                koreanPanel.style.display = 'none';
-            } else if (view === 'korean') {
-                wrapper.style.gridTemplateColumns = '1fr';
-                englishPanel.style.display = 'none';
-                koreanPanel.style.display = 'block';
-            }
-        }
-
-        document.getElementById('lesson-select').addEventListener('change', loadLesson);
-        document.getElementById('search-input').addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') searchText();
+        document.getElementById('search-input').addEventListener('input', (e) => {
+            const val = e.target.value.toLowerCase();
+            const filtered = acarangaData.filter(d => 
+                d.title.toLowerCase().includes(val) || d.lec_num.toLowerCase().includes(val)
+            );
+            renderSidebar(filtered);
         });
 
-        // Load initial lesson
-        loadLesson();
+        window.onload = init;
     </script>
 </body>
 </html>
